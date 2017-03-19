@@ -162,22 +162,6 @@ log = {
 	{ levels = { "error" }; to = "syslog";  };
 }
 
------------ Virtual hosts -----------
--- You need to add a VirtualHost entry for each domain you wish Prosody to serve.
--- Settings under each VirtualHost entry apply *only* to that host.
-
-VirtualHost "example.com"
-	enabled = false -- Remove this line to enable this host
-
-	-- Assign this host a certificate for TLS, otherwise it would use the one
-	-- set in the global section (if any).
-	-- Note that old-style SSL on port 5223 only supports one certificate, and will always
-	-- use the global one.
-	ssl = {
-		key = "/etc/prosody/certs/example.com.key";
-		certificate = "/etc/prosody/certs/example.com.crt";
-	}
-
 ------ Components ------
 -- You can specify components to add hosts that provide special services,
 -- like multi-user conferences, and transports.
@@ -197,6 +181,10 @@ VirtualHost "example.com"
 --
 --Component "gateway.example.com"
 --	component_secret = "password"
+
+----------- Virtual hosts -----------
+-- You need to add a VirtualHost entry for each domain you wish Prosody to serve.
+-- Settings under each VirtualHost entry apply *only* to that host.
 
 ------ Additional config files ------
 -- For organizational purposes you may prefer to add VirtualHost and
