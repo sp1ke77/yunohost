@@ -179,9 +179,6 @@ end
 function _M.bind(username, password)
     local conn   = _M.getconnection();
     local filter = format('%s=%s', params.user.usernamefield, username);
-    if params.user.usernamefield == 'mail' then
-        filter = format('mail=%s@*', username);
-    end    
 
     if filter then
         filter = _M.filter.combine_and(filter, params.user.filter);
@@ -245,9 +242,9 @@ end
 do
     local ok, err;
 
-    metronome.unlock_globals();
+    prosody.unlock_globals();
     ok, ldap = pcall(require, 'lualdap');
-    metronome.lock_globals();
+    prosody.lock_globals();
     if not ok then
         module:log("error", "Failed to load the LuaLDAP library for accessing LDAP: %s", ldap);
         module:log("error", "More information on install LuaLDAP can be found at http://www.keplerproject.org/lualdap");
