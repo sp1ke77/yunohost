@@ -426,12 +426,6 @@ app:
             action_help: List apps
             api: GET /apps
             arguments:
-                -l:
-                    full: --limit
-                    help: Maximum number of app fetched
-                -o:
-                    full: --offset
-                    help: Starting number for app fetching
                 -f:
                     full: --filter
                     help: Name filter of app_id or app_name
@@ -684,7 +678,7 @@ backup:
                     help: Name of the backup archive
                     extra:
                         pattern: &pattern_backup_archive_name
-                            - !!str ^[\w\-\.]{1,30}(?<!\.)$
+                            - !!str ^[\w\-\._]{1,30}(?<!\.)$
                             - "pattern_backup_archive_name"
                 -d:
                     full: --description

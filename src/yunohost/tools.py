@@ -46,7 +46,8 @@ from yunohost.service import service_status, service_regen_conf, service_log
 from yunohost.monitor import monitor_disk, monitor_system
 from yunohost.utils.packages import ynh_packages_version
 
-apps_setting_path= '/etc/yunohost/apps/'
+# FIXME this is a duplicate from apps.py
+APPS_SETTING_PATH= '/etc/yunohost/apps/'
 
 logger = getActionLogger('yunohost.tools')
 
@@ -162,6 +163,31 @@ def tools_maindomain(auth, new_domain=None):
         logger.warning("%s" % e, exc_info=1)
         raise MoulinetteError(errno.EPERM, m18n.n('maindomain_change_failed'))
 
+    # Set hostname
+    pretty_hostname = "(YunoHost/%s)" % new_domain
+    commands = [
+        "sudo hostnamectl --static    set-hostname".split() + [new_domain],
+        "sudo hostnamectl --transient set-hostname".split() + [new_domain],
+        "sudo hostnamectl --pretty    set-hostname".split() + [pretty_hostname]
+    ]
+
+    for command in commands:
+        p = subprocess.Popen(command,
+                             stdout=subprocess.PIPE,
+                             stderr=subprocess.STDOUT)
+
+        out, _ = p.communicate()
+
+        if p.returncode != 0:
+            logger.warning(command)
+            logger.warning(out)
+            raise MoulinetteError(errno.EIO, m18n.n('domain_hostname_failed'))
+        else:
+            logger.info(out)
+
+    # Generate SSOwat configuration file
+    app_ssowatconf(auth)
+
     # Regen configurations
     try:
         with open('/etc/yunohost/installed', 'r') as f:
@@ -265,28 +291,35 @@ def tools_postinstall(domain, password, ignore_dyndns=False):
     # Create SSL CA
     service_regen_conf(['ssl'], force=True)
     ssl_dir = '/usr/share/yunohost/yunohost-config/ssl/yunoCA'
-    command_list = [
+    commands = [
         'echo "01" > %s/serial' % ssl_dir,
         'rm %s/index.txt'       % ssl_dir,
         'touch %s/index.txt'    % ssl_dir,
         'cp %s/openssl.cnf %s/openssl.ca.cnf' % (ssl_dir, ssl_dir),
-        'sed -i "s/yunohost.org/%s/g" %s/openssl.ca.cnf ' % (domain, ssl_dir),
+        'sed -i s/yunohost.org/%s/g %s/openssl.ca.cnf ' % (domain, ssl_dir),
         'openssl req -x509 -new -config %s/openssl.ca.cnf -days 3650 -out %s/ca/cacert.pem -keyout %s/ca/cakey.pem -nodes -batch' % (ssl_dir, ssl_dir, ssl_dir),
         'cp %s/ca/cacert.pem /etc/ssl/certs/ca-yunohost_crt.pem' % ssl_dir,
         'update-ca-certificates'
     ]
 
-    for command in command_list:
-        if os.system(command) != 0:
+    for command in commands:
+        p = subprocess.Popen(
+            command.split(), stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
+
+        out, _ = p.communicate()
+
+        if p.returncode != 0:
+            logger.warning(out)
             raise MoulinetteError(errno.EPERM,
                                   m18n.n('yunohost_ca_creation_failed'))
+        else:
+            logger.debug(out)
+
+    logger.success(m18n.n('yunohost_ca_creation_success'))
 
     # New domain config
     domain_add(auth, domain, dyndns)
     tools_maindomain(auth, domain)
-
-    # Generate SSOwat configuration file
-    app_ssowatconf(auth)
 
     # Change LDAP admin password
     tools_adminpw(auth, password)
@@ -341,7 +374,7 @@ def tools_update(ignore_apps=False, ignore_packages=False):
             app_fetchlist()
         except MoulinetteError:
             pass
-        app_list = os.listdir(apps_setting_path)
+        app_list = os.listdir(APPS_SETTING_PATH)
         if len(app_list) > 0:
             for app_id in app_list:
                 if '__' in app_id:
