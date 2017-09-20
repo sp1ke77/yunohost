@@ -1,3 +1,167 @@
+yunohost (2.7.2) stable; urgency=low
+
+  * [mod] pep8
+  * [fix] Explicitly require moulinette and ssowat >= 2.7.1
+  * [fix] Set firewall start as background task (to be done right after postinstall) to avoid lock issues
+
+Thanks to all contributors <3 ! (Bram, Alex)
+
+ -- Alexandre Aubin <alex.aubin@mailoo.org>  Tue, 22 Aug 2017 21:25:17 -0400
+
+yunohost (2.7.1) testing; urgency=low
+
+  ## Security: uses sha-512 to store password and auto upgrade old password on login
+  * [fix] use real random for hash selection (Laurent Peuch)
+  * [enh] use the full length of available chars for salt generation (Laurent Peuch)
+  * [mod] add more salt because life is miserable (Laurent Peuch)
+  * [fix] move to sh512 because it's fucking year 2017 (Laurent Peuch)
+  * [enh] according to https://www.safaribooksonline.com/library/view/practical-unix-and/0596003234/ch04s03.html we can go up to 16 salt caracters (Laurent Peuch)
+  * [fix] also uses sha512 in user_update() (Laurent Peuch)
+  * [fix] uses strong hash for admin password (Laurent Peuch)
+
+  ## Add a reboot/shutdown action
+  * [enh] Add reboot/shutdown actions in tools (#190) (Laurent Peuch, opi)
+
+  ## Change lock mechanism
+  * Remove old 'lock' configuration (Alexandre Aubin)
+  * Removed unusted socket import (Alexandre Aubin)
+
+  ## Various fix
+  ### backup
+  * [fix] Remove check that domain is resolved locally (Alexandre Aubin)
+  * [fix] Tell user that domain dns-conf shows a recommendation only (Alexandre Aubin)
+  * [fix] Backup without info.json (#342) (ljf)
+  * [fix] Make read-only mount bind actually read-only (#343) (ljf)
+  ### dyndns
+  * Regen dnsmasq conf if it's not up to date :| (Alexandre Aubin)
+  * [fix] timeout on request to avoid blocking process (Laurent Peuch) 
+  * Put request url in an intermediate variable (Alexandre Aubin)
+  ### other
+  * clean users.py (Laurent Peuch)
+  * clean domains.py (Laurent Peuch)
+  * [enh] add 'yunohost tools shell' (Laurent Peuch)
+  * Use app_ssowatconf instead of os.system call (Alexandre Aubin)
+
+  Thanks to all contributors <3 ! (Bram, ljf, Aleks, opi)
+
+ -- Laurent Peuch <cortex@worlddomination.be>  Sat, 19 Aug 2017 23:16:44 +0000
+
+yunohost (2.7.0) testing; urgency=low
+
+Thanks to all contributors <3 ! (Bram, Maniack C, ljf, Aleks, JimboJoe, anmol26s, e-lie, Ozhiganov)
+
+Major fixes / improvements
+==========================
+
+  * [enh] Add a migration framework (#195)
+  * [enh] Remove m18n (and other globals) black magic (#336)
+  * [fix] Refactor DNS conf management for domains (#299)
+  * [enh] Support custom backup methods (#326)
+
+App helpers
+===========
+
+  * New helper autopurge (#321)
+  * New helpers ynh_add_fpm_config and ynh_remove_fpm_config (#284)
+  * New helpers ynh_restore_upgradebackup and ynh_backup_before_upgrade (#289)
+  * New helpers ynh_add_nginx_config and ynh_remove_nginx_config (#285)
+  * New helpers ynh_add_systemd_config and ynh_remove_systemd_config (#287)
+
+Smaller fixes / improvements
+============================
+
+  * [fix] Run change_url scripts as root as a matter of homogeneity (#329)
+  * [fix] Don't verify SSL during changeurl tests :/ (#332)
+  * [fix] Depreciation warning for --hooks was always shown (#333)
+  * [fix] Logrotate append (#328)
+  * [enh] Check that url is available and normalize path before app install (#304)
+  * [enh] Check that user is legitimate to use an email adress when sending mail (#330)
+  * [fix] Properly catch Invalid manifest json with ValueError. (#324)
+  * [fix] No default backup method (redmine 968) (#339)
+  * [enh] Add a script to test m18n keys usage (#308)
+  * [i18] Started russian translation (#340)
+
+ -- Alexandre Aubin <alex.aubin@mailoo.org>  Mon, 07 Aug 2017 13:16:08 -0400
+
+yunohost (2.6.5) stable; urgency=low
+
+  Minor fix
+  ---------
+
+  * Do not crash backup restore if archivemount is not there (#325)
+
+ -- Alexandre Aubin <alex.aubin@mailoo.org>  Wed, 26 Jul 2017 11:56:09 -0400
+
+yunohost (2.6.4) stable; urgency=low
+
+  Changes
+  -------------
+
+  * Misc fixes here and there
+  * [i18n] Update Spanish, German and French translations (#323)
+
+  Thanks to all contributors : opi, Maniack C, Alex, JuanuSt, franzos, Jibec, Jeroen and beyercenter !
+
+ -- ljf <ljf+yunohost@grimaud.me>  Wed, 21 Jun 2017 17:18:00 -0400
+
+yunohost (2.6.3) testing; urgency=low
+
+  Major changes
+  -------------
+
+  * [love] Add missing contributors & translators.
+  * [enh] Introduce global settings (#229)
+  * [enh] Refactor backup management to pave the way to borg (#275)
+  * [enh] Changing nginx ciphers to intermediate compatiblity (#298)
+  * [enh] Use ssl-cert group for certificates, instead of metronome (#222)
+  * [enh] Allow regen-conf to manage new files already present on the system (#311)
+  * [apps] New helpers
+      * ynh_secure_remove (#281)
+      * ynh_setup_source (#282)
+      * ynh_webpath_available and ynh_webpath_register (#235)
+      * ynh_mysql_generate_db and ynh_mysql_remove_db (#236)
+      * ynh_store_file_checksum and ynh_backup_if_checksum_is_different (#286)
+  * Misc fixes here and there
+  * [i18n] Update Spanish, German and French translations (#318)
+
+  Thanks to all contributors : Bram, ljf, opi, Maniack C, Alex, JimboJoe, Moul, Jibec, JuanuSt and franzos !
+
+ -- Alexandre Aubin <alex.aubin@mailoo.org>  Fri, 02 Jun 2017 09:15:05 -0400
+
+yunohost (2.6.2) testing; urgency=low
+
+  New Features
+  ------------
+
+  * [enh] Allow applications to ship a script to change its url (#185)
+  * New helper ynh_replace_string (#280)
+  * New helper ynh_local_curl (#288)
+
+  Fixes
+  -----
+
+  * Fix for missing YunoHost tiles (#276)
+  * [fix] Properly define app upgradability / Fix app part of tools update (#255)
+  * [fix] Properly manage resolv.conf, dns resolvers and dnsmasq (#290)
+  * [fix] Add random delay to app fetchlist cron job (#297)
+
+  Improvements
+  -------------
+
+  * [fix] Avoid to remove a apt package accidentally (#292)
+  * [enh] Refactor applist management (#160)
+  * [enh] Add libnss-mdns as Debian dependency. (#279)
+  * [enh] ip6.yunohost is now served through HTTPS.
+  * [enh] Adding new port availability checker (#266)
+  * [fix] Split checkurl into two functions : availability + booking (#267)
+  * [enh] Cleaner postinstall logs during CA creation (#250)
+  * Allow underscore in backup name
+  * Rewrite text for "appslist_retrieve_bad_format"
+  * Rewrite text for "certmanager_http_check_timeout"
+  * Updated Spanish, German, Italian, French, German and Dutch translations
+
+ -- Alexandre Aubin <alex.aubin@mailoo.org>  Mon, 24 Apr 2017 09:07:51 -0400
+
 yunohost (2.6.1) testing; urgency=low
 
   [ Maniack Crudelis ]

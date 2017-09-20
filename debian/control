@@ -10,7 +10,7 @@ Homepage: https://yunohost.org/
 Package: yunohost
 Architecture: all
 Depends: ${python:Depends}, ${misc:Depends}
- , moulinette (>= 2.3.5.1)
+ , moulinette (>= 2.7.1), ssowat (>= 2.7.1)
  , python-psutil, python-requests, python-dnspython, python-openssl
  , python-apt, python-miniupnpc
  , glances
@@ -22,8 +22,8 @@ Depends: ${python:Depends}, ${misc:Depends}
  , dovecot-ldap, dovecot-lmtpd, dovecot-managesieved
  , dovecot-antispam, fail2ban
  , nginx-extras (>=1.6.2), php5-fpm, php5-ldap, php5-intl
- , dnsmasq, openssl, avahi-daemon, libnss-mdns
- , ssowat, prosody
+ , dnsmasq, openssl, avahi-daemon, libnss-mdns, resolvconf, libnss-myhostname
+ , prosody
  , rspamd (>= 1.2.0), rmilter (>=1.7.0), redis-server, opendkim-tools
  , haveged
 Recommends: yunohost-admin
@@ -33,7 +33,7 @@ Recommends: yunohost-admin
  , python-pip
  , unattended-upgrades
  , libdbd-ldap-perl, libnet-dns-perl
-Suggests: htop, vim, rsync, acpi-support-base, udisks2
+Suggests: htop, vim, rsync, acpi-support-base, udisks2, archivemount
 Conflicts: iptables-persistent, metronome
  , moulinette-yunohost, yunohost-config
  , yunohost-config-others, yunohost-config-postfix
